@@ -1,0 +1,36 @@
+{% extends 'catalog/base.html' %}
+{% load filters %}
+{% block content %}
+<div class="col-12 mb-5">
+    <a class="btn btn-outline-primary" href="{% url 'blog:create' %}">Добавить статью</a>
+</div>
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">SkyBlog</h1>
+    <p class="lead">Узнавайте из нашего блога о последних новинках мира техники и самых популярных товарах. Краткие
+        обзоры всегда помогут подобрать то, что необходимо именно вам!</p>
+</div>
+
+<div class="container">
+    <div class="row text-center">
+        {% for object in object_list %}
+        <div class="col-3">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">{{ object }}</h4>
+                </div>
+                <div class="card-body">
+                    <p class="list-unstyled mt-3 mb-4 text-start m-3">
+                        {{object.content|split}}...
+                    </p>
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'blog:view' object.pk %}">View</a>
+                        <a class="btn btn-sm btn-outline-primary" href="{% url 'blog:edit' object.pk %}">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" href="{% url 'blog:delete' object.pk %}">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
