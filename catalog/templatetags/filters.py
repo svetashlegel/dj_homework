@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 register = template.Library()
 
@@ -14,10 +15,10 @@ def split(text, autoescape=True):
 @register.filter
 def mediapath_filtr(path):
     """Фильтр, который преобразует переданный путь в полный путь для доступа к медиафайлу"""
-    return f"/media/{path}"
+    return f"{settings.MEDIA_URL}{path}"
 
 
 @register.simple_tag
 def mediapath_tag(path):
     """Шаблонный тег, который преобразует переданный путь в полный путь для доступа к медиафайлу"""
-    return f"/media/{path}"
+    return f"{settings.MEDIA_URL}{path}"
