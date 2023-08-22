@@ -21,6 +21,13 @@
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">{{ object.price }}$</h1>
                     <p class="list-unstyled mt-3 mb-4 text-start m-3">
+                        {% for version in object.version_set.all %}
+                        {% if version.status %}
+                        Последняя версия: {{ version }}
+                        {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="list-unstyled mt-3 mb-4 text-start m-3">
                         {{object.description|split}}...
                     </p>
                     <div class="btn-group">
@@ -33,4 +40,5 @@
         </div>
         {% endfor %}
     </div>
+</div>
 {% endblock %}

@@ -16,6 +16,16 @@
                             <td>{{ product.name }}</td>
                         </tr>
                         <tr>
+                            <td class="w-25">Последняя версия:</td>
+                            <td>
+                                {% for version in product.version_set.all %}
+                                {% if version.status %}
+                                {{ version }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="w-25">Категория товара:</td>
                             <td>{{ product.category }}</td>
                         </tr>
@@ -47,4 +57,5 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
