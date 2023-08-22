@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
+from django import forms
 
 from catalog.models import Product, Version
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
@@ -47,9 +48,8 @@ class ProductUpdateView(UpdateView):
     def form_valid(self, form):
         formset = self.get_context_data()['formset']
         self.object = form.save()
-        if formset.is_valid():
-            formset.instance = self.object
-            formset.save()
+        formset.instance = self.object
+        formset.save()
         return super().form_valid(form)
 
 
@@ -60,6 +60,17 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView):
     model = Product
     context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        versions = obj.version_set.all()
+        active_versions = []
+        for version in versions:
+            if version.status:
+                active_versions.append(version)
+        context["product_version"] = active_versions
+        return context
 
 
 class ProductDeleteView(DeleteView):

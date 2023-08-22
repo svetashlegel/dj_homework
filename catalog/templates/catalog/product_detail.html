@@ -16,12 +16,10 @@
                             <td>{{ product.name }}</td>
                         </tr>
                         <tr>
-                            <td class="w-25">Последняя версия:</td>
+                            <td class="w-25">Активные версии:</td>
                             <td>
-                                {% for version in product.version_set.all %}
-                                {% if version.status %}
-                                {{ version }}
-                                {% endif %}
+                                {% for product in product_version %}
+                                {{ product }}<br>
                                 {% endfor %}
                             </td>
                         </tr>
