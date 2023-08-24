@@ -28,6 +28,7 @@ class Product(models.Model):
     last_change_date = models.DateField(verbose_name='дата последнего изменения')
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='владелец')
+    is_active = models.BooleanField(verbose_name='доступен для редактирования', default=True)
 
     def __str__(self):
         return f'{self.name}'

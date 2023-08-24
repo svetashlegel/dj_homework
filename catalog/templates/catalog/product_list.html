@@ -32,8 +32,13 @@
                     </p>
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:view' object.pk %}">View</a>
+                        {% if user == object.owner %}
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:edit' object.pk %}">Edit</a>
                         <a class="btn btn-sm btn-outline-danger" href="{% url 'catalog:delete' object.pk %}">Delete</a>
+                        {% else %}
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:denial' 'edit' %}">Edit</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:denial' 'delete' %}">Delete</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

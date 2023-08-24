@@ -41,6 +41,7 @@ class ProductUpdateView(UpdateView):
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
         if self.object.owner != self.request.user:
+            self.object.is_active = False
             raise Http404("Вы не являетесь создателем данного товара, у вас нет прав на его редактирование.")
         return self.object
 
@@ -88,6 +89,7 @@ class ProductDeleteView(DeleteView):
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
         if self.object.owner != self.request.user:
+            self.object.is_active = False
             raise Http404("Вы не являетесь создателем данного товара, у вас нет прав на его удаление.")
         return self.object
 
@@ -99,3 +101,10 @@ def contacts(request):
         message = request.POST.get('message')
         print(f'{name} ({phone}): {message}')
     return render(request, 'catalog/contacts.html')
+
+
+def product_edit_denial(request, task):
+    context = {
+        'denied_task': task,
+    }
+    return render(request, 'catalog/edit_denial.html', context)
