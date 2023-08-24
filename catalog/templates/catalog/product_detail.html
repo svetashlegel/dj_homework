@@ -32,6 +32,10 @@
                             <td>{{ product.creation_date }}</td>
                         </tr>
                         <tr>
+                            <td class="w-25">Создатель:</td>
+                            <td>{{ product.owner|default:'без создателя' }}</td>
+                        </tr>
+                        <tr>
                             <td class="w-25">Описание товара:</td>
                             <td>{{ product.description }}</td>
                         </tr>

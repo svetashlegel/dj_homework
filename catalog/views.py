@@ -1,7 +1,7 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
-from django import forms
 
 from catalog.models import Product, Version
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
@@ -28,6 +28,8 @@ class ProductCreateView(CreateView):
         if formset.is_valid():
             formset.instance = self.object
             formset.save()
+        self.object.owner = self.request.user
+        self.object.save()
         return super().form_valid(form)
 
 
@@ -35,6 +37,12 @@ class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:home')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user:
+            raise Http404("Вы не являетесь создателем данного товара, у вас нет прав на его редактирование.")
+        return self.object
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -76,6 +84,12 @@ class ProductDetailView(DetailView):
 class ProductDeleteView(DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:home')
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner != self.request.user:
+            raise Http404("Вы не являетесь создателем данного товара, у вас нет прав на его удаление.")
+        return self.object
 
 
 def contacts(request):
