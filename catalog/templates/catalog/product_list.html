@@ -2,7 +2,11 @@
 {% load filters %}
 {% block content %}
 <div class="col-12 mb-5">
+    {% if user.is_authenticated %}
     <a class="btn btn-outline-primary" href="{% url 'catalog:create' %}">Добавить товар</a>
+    {% else %}
+    <p>Авторизуйтесь для добавления товара</p>
+    {% endif %}
 </div>
 <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
     <h1 class="display-4">Skystore</h1>
@@ -23,10 +27,18 @@
                     <p class="list-unstyled mt-3 mb-4 text-start m-3">
                         {{object.description|split}}...
                     </p>
+                    <p class="list-unstyled mt-3 mb-4 text-start m-3">
+                        User: {{object.owner|default:'без владельца'}}
+                    </p>
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:view' object.pk %}">View</a>
+                        {% if user == object.owner %}
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:edit' object.pk %}">Edit</a>
                         <a class="btn btn-sm btn-outline-danger" href="{% url 'catalog:delete' object.pk %}">Delete</a>
+                        {% else %}
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:denial' 'edit' %}">Edit</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'catalog:denial' 'delete' %}">Delete</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

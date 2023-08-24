@@ -1,0 +1,13 @@
+{% extends 'catalog/base.html' %}
+
+{% block content %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Недостаточно прав.</h4>
+    {% if denied_task == 'edit' %}
+    <p>У вас недостаточно прав для редактирования данного товара, так как вы не являетесь его создателем. Вы можете просмотреть товар в разделе 'View'.</p>
+    {% elif denied_task == 'delete' %}
+    <p>У вас недостаточно прав для удаления данного товара, так как вы не являетесь его создателем. Вы можете просмотреть товар в разделе 'View'</p>
+    {% endif %}
+</div>
+
+{% endblock %}

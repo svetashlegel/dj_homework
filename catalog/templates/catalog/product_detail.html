@@ -32,6 +32,10 @@
                             <td>{{ product.creation_date }}</td>
                         </tr>
                         <tr>
+                            <td class="w-25">Создатель:</td>
+                            <td>{{ product.owner|default:'без создателя' }}</td>
+                        </tr>
+                        <tr>
                             <td class="w-25">Описание товара:</td>
                             <td>{{ product.description }}</td>
                         </tr>
@@ -46,13 +50,14 @@
         <div class="col-lg-3 col-md-6 col-sm-12">
             <div class="card mb-4 box-shadow">
 
-                {% if product.category == 'laptops' %}
-                <img src="https://i.ebayimg.com/images/g/vPoAAOSwozpjXUC2/s-l1600.jpg">
-                {% elif product.category == 'smartphones' %}
+                {% if product.category.name == 'laptops' %}
+                <img src="https://i.ebayimg.com/images/g/90sAAOSwCrRg17I5/s-l1600.jpg">
+                {% elif product.category.name == 'smartphones' %}
                 <img src="https://avatars.mds.yandex.net/get-mpic/4944925/img_id8932913264730099472.jpeg/x332_trim">
                 {% endif %}
 
             </div>
+        </div>
         </div>
     </div>
 </div>
