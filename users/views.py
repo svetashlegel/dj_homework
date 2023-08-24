@@ -1,8 +1,10 @@
+from random import randint
+
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
@@ -83,3 +85,24 @@ class UserUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = User.objects.get(email=email)
+        new_password = "".join([str(randint(0, 9)) for _ in range(12)])
+        send_mail(
+            subject='Смена пароля',
+            message=f'Ваш новый пароль: {new_password}',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email]
+        )
+        user.set_password(new_password)
+        user.save()
+        return redirect('users:password_reset_done')
+    return render(request, 'users/confirmation/password_reset_form.html')
+
+
+class UserResetDoneView(PasswordResetDoneView):
+    template_name = "users/confirmation/password_reset_done.html"
