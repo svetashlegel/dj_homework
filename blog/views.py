@@ -1,13 +1,15 @@
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import CreateView, DetailView, ListView, UpdateView, DeleteView
 from blog.models import Article
 from django.urls import reverse_lazy, reverse
 from pytils.translit import slugify
 
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(PermissionRequiredMixin, CreateView):
     model = Article
     fields = ('title', 'content', 'preview', 'creation_date')
+    permission_required = 'blog.add_article'
     success_url = reverse_lazy('blog:list')
 
     def form_valid(self, form):
@@ -19,9 +21,10 @@ class ArticleCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ArticleUpdateView(UpdateView):
+class ArticleUpdateView(PermissionRequiredMixin, UpdateView):
     model = Article
     fields = ('title', 'content', 'preview', 'creation_date')
+    permission_required = 'blog.change_article'
 
     def form_valid(self, form):
         if form.is_valid():
@@ -54,6 +57,7 @@ class ArticleDetailView(DetailView):
         return self.object
 
 
-class ArticleDeleteView(DeleteView):
+class ArticleDeleteView(PermissionRequiredMixin, DeleteView):
     model = Article
+    permission_required = 'blog.delete_article'
     success_url = reverse_lazy('blog:list')

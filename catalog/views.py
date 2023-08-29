@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -8,9 +9,10 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 from catalog.forms import ProductForm, VersionForm
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
+    permission_required = 'catalog.add_product'
     success_url = reverse_lazy('catalog:home')
 
     def get_context_data(self, **kwargs):
@@ -40,7 +42,7 @@ class ProductUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.owner != self.request.user:
+        if self.object.owner != self.request.user and not self.request.user.is_staff:
             self.object.is_active = False
             raise Http404("Вы не являетесь создателем данного товара, у вас нет прав на его редактирование.")
         return self.object

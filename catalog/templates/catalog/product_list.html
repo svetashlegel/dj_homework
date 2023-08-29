@@ -32,7 +32,7 @@
                     </p>
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:view' object.pk %}">View</a>
-                        {% if user == object.owner %}
+                        {% if user == object.owner or user.is_staff %}
                         <a class="btn btn-sm btn-outline-primary" href="{% url 'catalog:edit' object.pk %}">Edit</a>
                         <a class="btn btn-sm btn-outline-danger" href="{% url 'catalog:delete' object.pk %}">Delete</a>
                         {% else %}
