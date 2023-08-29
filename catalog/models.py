@@ -26,6 +26,7 @@ class Product(models.Model):
     price = models.IntegerField(verbose_name='цена')
     creation_date = models.DateField(verbose_name='дата создания')
     last_change_date = models.DateField(verbose_name='дата последнего изменения')
+    is_published = models.BooleanField(default=False, verbose_name='признак опубликованности')
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='владелец')
     is_active = models.BooleanField(verbose_name='доступен для редактирования', default=True)
@@ -37,6 +38,12 @@ class Product(models.Model):
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
         ordering = ('name',)
+        permissions = [
+            (
+                'set_published',
+                'Can publish posts'
+            )
+        ]
 
 
 class Version(models.Model):
