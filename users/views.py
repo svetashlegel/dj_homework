@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, UpdateView, TemplateView
+from django.contrib.auth.models import Group
 
 from config import settings
 from users.models import User
@@ -33,6 +34,8 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
+        group = Group.objects.get(name='Service_user')
+        user.groups.add(group)
         user.is_active = False
         user.save()
         token = default_token_generator.make_token(user)
