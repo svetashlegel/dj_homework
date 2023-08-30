@@ -1,15 +1,13 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
-from django.conf import settings
 
-from catalog.models import Product, Version, Category
+from catalog.models import Product, Version
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from catalog.forms import ProductForm, VersionForm
-from catalog.services import get_categories_cache
+from catalog.services import get_categories_cache, get_active_versions
 
 
 class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -78,12 +76,7 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
-        versions = obj.version_set.all()
-        active_versions = []
-        for version in versions:
-            if version.status:
-                active_versions.append(version)
-        context["product_version"] = active_versions
+        context["product_version"] = get_active_versions(obj)
         return context
 
 

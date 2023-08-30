@@ -14,3 +14,12 @@ def get_categories_cache():
     else:
         category_list = Category.objects.all()
     return category_list
+
+
+def get_active_versions(obj):
+    versions = obj.version_set.all()
+    active_versions = []
+    for version in versions:
+        if version.status:
+            active_versions.append(version)
+    return active_versions

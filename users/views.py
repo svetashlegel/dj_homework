@@ -1,21 +1,16 @@
-from random import randint
-
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect, render
-from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, UpdateView, TemplateView
-from django.contrib.auth.models import Group
 
-from config import settings
 from users.models import User
 from users.forms import UserRegisterForm, UserForm
+from users.services import add_group, send_registration_mail, send_reset_password_mail
 
 
 class LoginView(BaseLoginView):
@@ -34,21 +29,8 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        group = Group.objects.get(name='Service_user')
-        user.groups.add(group)
-        user.is_active = False
-        user.save()
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        activation_url = reverse_lazy('users:confirm_email', kwargs={'uidb64': uid, 'token': token})
-        current_site = settings.SITE_NAME
-        send_mail(
-            subject='Регистрация на сайте',
-            message=f'Вы зарегистрировались на нашей платформе, пожалуйста подтвердите свой email: '
-                    f'http://{current_site}{activation_url}',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[user.email]
-        )
+        add_group(user)
+        send_registration_mail(user)
         return redirect('users:email_confirmation_sent')
 
 
@@ -93,16 +75,7 @@ class UserUpdateView(UpdateView):
 def reset_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        user = User.objects.get(email=email)
-        new_password = "".join([str(randint(0, 9)) for _ in range(12)])
-        send_mail(
-            subject='Смена пароля',
-            message=f'Ваш новый пароль: {new_password}',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[email]
-        )
-        user.set_password(new_password)
-        user.save()
+        send_reset_password_mail(email)
         return redirect('users:password_reset_done')
     return render(request, 'users/confirmation/password_reset_form.html')
 
