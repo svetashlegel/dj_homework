@@ -1,16 +1,14 @@
-from django.contrib.auth import login
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+
 from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
-from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import redirect, render
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, UpdateView, TemplateView
 
 from users.models import User
 from users.forms import UserRegisterForm, UserForm
-from users.services import add_group, send_registration_mail, send_reset_password_mail
+from users.services import add_group, send_registration_mail, send_reset_password_mail, check_link
 
 
 class LoginView(BaseLoginView):
@@ -40,16 +38,8 @@ class UserConfirmationSentView(PasswordResetDoneView):
 
 class UserConfirmEmailView(View):
     def get(self, request, uidb64, token):
-        try:
-            uid = urlsafe_base64_decode(uidb64)
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            login(request, user)
+        is_success = check_link(request, uidb64, token)
+        if is_success:
             return redirect('users:email_confirmed')
         else:
             return redirect('users:email_confirmation_failed')
