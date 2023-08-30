@@ -1,12 +1,15 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.core.cache import cache
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
+from django.conf import settings
 
-from catalog.models import Product, Version
+from catalog.models import Product, Version, Category
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from catalog.forms import ProductForm, VersionForm
+from catalog.services import get_categories_cache
 
 
 class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -110,3 +113,12 @@ def product_edit_denial(request, task):
         'denied_task': task,
     }
     return render(request, 'catalog/edit_denial.html', context)
+
+
+def categories(request):
+
+    context = {
+        'object_list': get_categories_cache(),
+        'title': 'Skystore - все категории товаров'
+    }
+    return render(request, 'catalog/categories.html', context)
